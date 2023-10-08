@@ -13,6 +13,7 @@
 
 #include "lwip/pbuf.h"
 #include "lwip/tcp.h"
+#include "config.h"
 
 #define UART1_TX_PIN 0
 #define UART1_RX_PIN 1

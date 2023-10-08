@@ -170,7 +170,7 @@ err_t tcp_server_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err
     //}
     return tcp_server_send_data(arg);
 }
-tcp_server_write
+
 int tcp_server_write(void *arg, char*data, int data_len){
     TCP_SERVER_T *state = (TCP_SERVER_T*)arg;
 
