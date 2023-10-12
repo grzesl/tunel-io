@@ -17,12 +17,32 @@ set(CMAKE_CXX_STANDARD 17)
 # Creates a pico-sdk subdirectory in our project for the libraries
 pico_sdk_init()
 
+
+
+# Add a compilation subdirectory
+add_subdirectory(picolcd/Config)
+add_subdirectory(picolcd/Infrared)
+add_subdirectory(picolcd/Icm20948)
+add_subdirectory(picolcd/LCD)
+
+# Add a header directory
+include_directories(./picolcd/Config)
+include_directories(./picolcd/Icm20948)
+include_directories(./picolcd/LCD)
+include_directories(./picolcd/Infrared)
+
+
+add_subdirectory(ugui)
+include_directories(./ugui)
+
+
 include_directories(./)
 # Tell CMake where to find the executable source file
 add_executable(${PROJECT_NAME} 
     main.c
     uart_irq.c
     tcp_server.c
+    lcd.c
 )
 
 # Create map/bin/hex/uf2 files
@@ -37,11 +57,15 @@ target_link_libraries(${PROJECT_NAME}
     #hardware_flash
     #hardware_irq
     #hardware_adc
-    #hardware_pwm
-    #hardware_i2c
-    #hardware_spi
+    hardware_pwm
+    hardware_i2c
+    hardware_spi
     #hardware_dma
     #hardware_exception
+    LCD Infrared 
+    Icm20948 
+    Config
+    ugui
 )
 
 # Enable usb output, disable uart output

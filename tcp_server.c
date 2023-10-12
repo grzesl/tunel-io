@@ -241,9 +241,9 @@ static err_t tcp_server_accept(void *arg, struct tcp_pcb *client_pcb, err_t err)
     return tcp_server_send_data(arg);
 }
 
-static bool tcp_server_open(void *arg) {
+static bool tcp_server_open(void *arg, int port) {
     TCP_SERVER_T *state = (TCP_SERVER_T*)arg;
-    DEBUG_printf("Starting server at %s on port %u\n", ip4addr_ntoa(netif_ip4_addr(netif_list)), TCP_PORT);
+    DEBUG_printf("Starting server at %s on port %u\n", ip4addr_ntoa(netif_ip4_addr(netif_list)), port);
 
     struct tcp_pcb *pcb = tcp_new_ip_type(IPADDR_TYPE_ANY);
     if (!pcb) {
@@ -272,14 +272,14 @@ static bool tcp_server_open(void *arg) {
     return true;
 }
 
-void *run_tcp_server(void)
+void *run_tcp_server(int port)
 {
     void *server_state = (void*) tcp_server_init();
     if (!server_state)
     {
         return 0;
     }
-    if (!tcp_server_open(server_state))
+    if (!tcp_server_open(server_state, port))
     {
         tcp_server_result(server_state, -1);
         return 0;

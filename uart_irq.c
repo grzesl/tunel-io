@@ -2,8 +2,8 @@
 #include "pico/stdlib.h"
 #include "hardware/uart.h"
 
-#define RX_BUFFER_SIZE 256
-#define TX_BUFFER_SIZE 256
+#define RX_BUFFER_SIZE 128
+#define TX_BUFFER_SIZE 128
 
 typedef struct TUART_IRQ {
 int uartid;
@@ -18,10 +18,10 @@ volatile int comTx_head, comTx_tail;
 
 UART_IRQ UARTIO [2];
 
-static char glob_com0Rx_buf[RX_BUFFER_SIZE];
-static char glob_com0Tx_buf[TX_BUFFER_SIZE];
-static char glob_com1Rx_buf[RX_BUFFER_SIZE];
-static char glob_com1Tx_buf[TX_BUFFER_SIZE];
+///static char glob_com0Rx_buf[RX_BUFFER_SIZE];
+//static char glob_com0Tx_buf[TX_BUFFER_SIZE];
+//static char glob_com1Rx_buf[RX_BUFFER_SIZE];
+//static char glob_com1Tx_buf[TX_BUFFER_SIZE];
 
 void on_uart_irq1();
 void on_uart_irq0();
@@ -31,14 +31,19 @@ void init_uart_io()
 UARTIO[0].uartid = 0;
 UARTIO[0].uartIRQ = UART0_IRQ;
 UARTIO[0].uart = uart0;
-UARTIO[0].comRx_buf = glob_com0Rx_buf;
-UARTIO[0].comTx_buf = glob_com0Tx_buf;
+//UARTIO[0].comRx_buf = glob_com0Rx_buf;
+//UARTIO[0].comTx_buf = glob_com0Tx_buf;
+UARTIO[0].comRx_buf = malloc(RX_BUFFER_SIZE);
+UARTIO[0].comTx_buf = malloc(TX_BUFFER_SIZE);
 
 UARTIO[1].uartid = 1;
 UARTIO[1].uartIRQ = UART1_IRQ;
 UARTIO[1].uart = uart1;
-UARTIO[1].comRx_buf = glob_com1Rx_buf;
-UARTIO[1].comTx_buf = glob_com1Tx_buf;
+//UARTIO[1].comRx_buf = glob_com1Rx_buf;
+//UARTIO[1].comTx_buf = glob_com1Tx_buf;
+UARTIO[1].comRx_buf = malloc(RX_BUFFER_SIZE);
+UARTIO[1].comTx_buf = malloc(TX_BUFFER_SIZE);
+
 }
 
 /***************************************************************************************************

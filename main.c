@@ -18,28 +18,30 @@
 #define UART1_TX_PIN 0
 #define UART1_RX_PIN 1
 
-#define UART2_TX_PIN 8
-#define UART2_RX_PIN 9
+#define UART2_TX_PIN 4
+#define UART2_RX_PIN 5
 
 
-
+void lcd_init();
+void lcd_loop();
 void init_uart_io();
 void setupuart(int uart, int s2,int parity, int b7, int baud);
 unsigned char SerialPutchar(int uart, unsigned char c);
 int SerialGetchar(int uart);
 
-void* run_tcp_server(void);
+void* run_tcp_server(int port);
 int step_tcp_server(void *arg);
 
 int tcp_server_read(void *arg, char*data, int data_len);
 int tcp_server_write(void *arg, char*data, int data_len);
 
 #define IO_BUFF_LEN 256
-
+void* server_state;
 int main () { 
-    void* server_state;
+    
     char buff [IO_BUFF_LEN];
     stdio_init_all();
+    lcd_init();
     printf("Starting...\n");
 
     gpio_set_function(UART1_TX_PIN, GPIO_FUNC_UART);
@@ -58,6 +60,10 @@ int main () {
 
     cyw43_arch_enable_sta_mode();
 
+    UG_ConsolePutString("Try to connect WiFI " );
+    UG_ConsolePutString(WIFI_SSID );
+    UG_ConsolePutString("...\n" );
+
     printf("Connecting to Wi-Fi...\n");
     if (cyw43_arch_wifi_connect_timeout_ms(WIFI_SSID, WIFI_PASSWORD, CYW43_AUTH_WPA2_AES_PSK, 30000)) {
         printf("failed to connect.\n");
@@ -67,7 +73,9 @@ int main () {
     }
 
     
-    server_state = run_tcp_server();
+    server_state = run_tcp_server(4242);
+
+
 
     while(server_state)
     {
@@ -95,16 +103,27 @@ int main () {
             tcp_server_write(server_state, (char *)&c, 1);
         }
 
-        if(step_tcp_server(server_state))
+
+        if (step_tcp_server(server_state))
             break;
 
         int read = tcp_server_read(server_state, buff, IO_BUFF_LEN);
+
+            buff[read] = 0;
+            UG_ConsolePutString(buff);
+
             for(int i = 0 ; i < read; i++)
             {
+            
             putchar_raw(buff[i]);
             SerialPutchar(0,buff[i]);
             SerialPutchar(1,buff[i]);
         }
+
+
+        lcd_loop();
+
+
     }
 
     cyw43_arch_deinit();
